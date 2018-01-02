@@ -1,7 +1,6 @@
 # Nanoid port for Elixir
 
-Elixir port of the NanoID ([https://github.com/ai/nanoid](https://github.com/ai/nanoid)) ID generator.
-A tiny, secure URL-friendly unique string ID generator.
+Elixir port of NanoID ([https://github.com/ai/nanoid](https://github.com/ai/nanoid)), a tiny, secure URL-friendly unique string ID generator.
 
 **Safe.** It uses cryptographically strong random APIs and guarantees a proper distribution of symbols.
 

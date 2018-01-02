@@ -27,7 +27,7 @@ defmodule Nanoid.Mixfile do
   end
 
   defp description do
-    "Elixir port of the NanoID (https://github.com/ai/nanoid) ID generator."
+    "Elixir port of NanoID (https://github.com/ai/nanoid), a tiny, secure URL-friendly unique string ID generator."
   end
 
   defp package do
