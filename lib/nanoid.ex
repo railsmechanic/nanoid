@@ -20,11 +20,11 @@ defmodule Nanoid do
   @doc """
   Generates a NanoID using the default alphabet.
   ## Example
-      # - Generate a NanoID with the default of 21 characters length
+  Generate a NanoID with the default size of 21 characters.
       iex> Nanoid.generate()
       "mJUHrGXZBZpNX50x2xkzf"
 
-      # - Generate a NanoID with 64 characters length
+  Generate a NanoID with a custom size of 64 characters.
       iex> Nanoid.generate(64)
       "wk9fsUrhK9k~MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
   """
@@ -34,13 +34,13 @@ defmodule Nanoid do
   def generate(_size),                                   do: generator(@default_alphabet, @default_size, @default_mask)
 
   @doc """
-  Generates a NanoID using a custom size and individual alphabet.
+  Generate a NanoID using a custom size and an individual alphabet.
   ## Example
-      # - Generate a NanoID with the default of 21 characters length
+  Generate a NanoID with the default size of 21 characters and an individual alphabet.
       iex> Nanoid.generate(21, "abcdef123")
       "d1dcd2dee333cae1bfdea"
 
-      # - Generate a NanoID with 64 characters length
+  Generate a NanoID with custom size of 64 characters and an individual alphabet.
       iex> Nanoid.generate(64, "abcdef123")
       "aabbaca3c11accca213babed2bcd1213efb3e3fa1ad23ecbf11c2ffc123f3bbe"
   """
