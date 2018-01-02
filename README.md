@@ -33,7 +33,6 @@ Generate a NanoID with the default of 21 characters length
 ```elixir
 iex> Nanoid.generate()
 "mJUHrGXZBZpNX50x2xkzf"
-"wk9fsUrhK9k~MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
 ```
 
 Generate a NanoID with 64 characters length
