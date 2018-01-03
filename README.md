@@ -26,7 +26,7 @@ The package can be installed as Hex package:
 
 ## Usage
 
-### Generate NanoIDs of indivdiual sizes and using the default alphabet
+### Generate NanoIDs of individual sizes and using the default alphabet
 
 Generate a NanoID with the default size of 21 characters.
 ```elixir
@@ -40,7 +40,7 @@ iex> Nanoid.generate(64)
 "wk9fsUrhK9k~MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
 ```
 
-### Generate NanoIDs of indivdiual sizes and with an indivdiual alphabet
+### Generate NanoIDs of individual sizes and with an individual alphabet
 
 Generate a NanoID with the default size of 21 characters and an individual alphabet.
 ```elixir
