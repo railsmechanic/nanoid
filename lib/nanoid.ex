@@ -46,8 +46,9 @@ defmodule Nanoid do
   @spec generate(Integer.t, String.t) :: String.t
   def generate(size, alphabet)
   def generate(size, alphabet) when is_integer(size) and size > 0 and is_binary(alphabet) and byte_size(alphabet) > 1 do
-    mask = ((2 <<< round(:math.floor(:math.log(String.length(alphabet) - 1) / :math.log(2)))) - 1)
-    step = round(:math.ceil(1.6 * mask * size / String.length(alphabet)))
+    alphabet_length = String.length(alphabet)
+    mask            = ((2 <<< round(:math.floor(:math.log(alphabet_length - 1) / :math.log(2)))) - 1)
+    step            = round(:math.ceil(1.6 * mask * size / alphabet_length))
     do_generate(size, alphabet, mask, step)
   end
   def generate(size, alphabet)  when is_list(alphabet),             do: generate(size, to_string(alphabet))
