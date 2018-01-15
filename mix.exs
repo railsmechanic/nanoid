@@ -5,7 +5,7 @@ defmodule Nanoid.Mixfile do
     [
       app: :nanoid,
       version: "1.0.0",
-      elixir: "~> 1.5",
+      elixir: "~> 1.4",
       start_permanent: Mix.env == :prod,
       description: description(),
       package: package(),
