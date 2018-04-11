@@ -1,4 +1,4 @@
-# Nanoid port for Elixir
+# Nanoid port for Elixir [![Build Status](https://travis-ci.org/railsmechanic/nanoid.svg?branch=master)](https://travis-ci.org/railsmechanic/nanoid)
 
 Elixir port of NanoID ([https://github.com/ai/nanoid](https://github.com/ai/nanoid)), a tiny, secure URL-friendly unique string ID generator.
 
