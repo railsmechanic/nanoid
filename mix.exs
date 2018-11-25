@@ -5,8 +5,8 @@ defmodule Nanoid.Mixfile do
     [
       app: :nanoid,
       version: "1.0.0",
-      elixir: "~> 1.4",
-      start_permanent: Mix.env == :prod,
+      elixir: "~> 1.5",
+      start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
       deps: deps(),
@@ -21,8 +21,8 @@ defmodule Nanoid.Mixfile do
 
   defp deps do
     [
-      {:ex_doc,   "~> 0.18.1",  only: [:dev]},
-      {:earmark,  "~> 1.2.4",   only: [:dev]},
+      {:ex_doc, "~> 0.18.1", only: [:dev]},
+      {:earmark, "~> 1.2.4", only: [:dev]}
     ]
   end
 
@@ -34,7 +34,7 @@ defmodule Nanoid.Mixfile do
     [
       maintainers: ["Matthias Kalb"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/railsmechanic/nanoid"},
+      links: %{"GitHub" => "https://github.com/railsmechanic/nanoid"}
     ]
   end
 end
