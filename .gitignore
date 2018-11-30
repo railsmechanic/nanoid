@@ -6,3 +6,4 @@
 /.fetch
 erl_crash.dump
 *.ez
+/docs/
