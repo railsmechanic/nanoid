@@ -15,7 +15,7 @@ The package can be installed as Hex package:
 
   ```elixir
   def deps do
-    [{:nanoid, "~> 2.0.0"}]
+    [{:nanoid, "~> 2.0.1"}]
   end
   ```
 
@@ -27,6 +27,15 @@ In order to keep this port close to the original, this possibility was also intr
 To ensure a certain level of security, `nanoid` uses per default the `secure` token generator.
 But according to your preferences, if you don't need "cryptographically strong random tokens", just use the `non-secure` token generator.
 
+
+## Configuration
+Starting with version 2.0.0 of nanoid for Elixir it's possible to use `config.exs` to configure nanoid defaults e.g. for different environments.
+
+```elixir
+config :nanoid,
+  size: 21,
+  alphabet: "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+```
 
 ## Usage
 

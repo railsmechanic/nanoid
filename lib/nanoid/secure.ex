@@ -7,8 +7,8 @@ defmodule Nanoid.Secure do
   use Bitwise
 
   ## -- DEFAULT ATTRIBUTES
+  @default_mask 63
   @default_size Application.get_env(:nanoid, :size, 21)
-  @default_mask Application.get_env(:nanoid, :mask, 63)
   @default_alphabet Application.get_env(
                       :nanoid,
                       :alphabet,
