@@ -4,7 +4,7 @@ defmodule Nanoid.Mixfile do
   def project do
     [
       app: :nanoid,
-      version: "2.0.1",
+      version: "2.0.2",
       elixir: "~> 1.4",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -21,8 +21,8 @@ defmodule Nanoid.Mixfile do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.19.1", only: [:dev]},
-      {:earmark, "~> 1.3.0", only: [:dev]}
+      {:ex_doc, "~> 0.21.1", only: [:dev]},
+      {:earmark, "~> 1.3.5", only: [:dev]}
     ]
   end
 

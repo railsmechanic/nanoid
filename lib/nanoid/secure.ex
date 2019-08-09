@@ -14,6 +14,7 @@ defmodule Nanoid.Secure do
                       :alphabet,
                       "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                     )
+  @default_alphabet_length String.length(@default_alphabet)
 
   @doc """
   Generates a secure NanoID using the default alphabet.
@@ -29,10 +30,12 @@ defmodule Nanoid.Secure do
   @spec generate(Integer.t()) :: String.t()
   def generate(size \\ @default_size)
 
-  def generate(size) when is_integer(size) and size > 0,
-    do: generator(size, @default_alphabet, @default_mask)
+  def generate(size) when is_integer(size) and size > 0 do
+    step = calculate_step(@default_mask, size, @default_alphabet_length)
+    do_generate(size, @default_alphabet, @default_mask, step)
+  end
 
-  def generate(_size), do: generator(@default_size, @default_alphabet, @default_mask)
+  def generate(_size), do: generate(@default_size)
 
   @doc """
   Generates a secure NanoID using a custom size and an individual alphabet.
@@ -51,18 +54,21 @@ defmodule Nanoid.Secure do
   def generate(size, alphabet)
       when is_integer(size) and size > 0 and is_binary(alphabet) and byte_size(alphabet) > 1 do
     alphabet_length = String.length(alphabet)
-    mask = (2 <<< round(Float.floor(:math.log(alphabet_length - 1) / :math.log(2)))) - 1
-    step = round(Float.ceil(1.6 * mask * size / alphabet_length))
+    mask = calculate_mask(alphabet_length)
+    step = calculate_step(mask, size, alphabet_length)
     do_generate(size, alphabet, mask, step)
   end
 
-  def generate(size, alphabet) when is_list(alphabet), do: generate(size, to_string(alphabet))
+  def generate(size, alphabet) when is_list(alphabet),
+    do: generate(size, to_string(alphabet))
 
   def generate(size, _alphabet) when is_integer(size) and size > 0,
     do: generate(size, @default_alphabet)
 
-  def generate(_size, _alphabet), do: generate(@default_size, @default_alphabet)
+  def generate(_size, _alphabet),
+    do: generate(@default_size, @default_alphabet)
 
+  # Generate NanoID recursively as long as the given size is reached
   @spec do_generate(Integer.t(), String.t(), Integer.t(), Integer.t(), String.t()) :: String.t()
   defp do_generate(size, alphabet, mask, step, acc \\ "")
 
@@ -80,7 +86,8 @@ defmodule Nanoid.Secure do
   defp generator(size, alphabet, mask)
 
   defp generator(size, alphabet, mask)
-       when is_integer(size) and size > 0 and is_binary(alphabet) and byte_size(alphabet) > 1 and
+       when is_integer(size) and size > 0 and
+              is_binary(alphabet) and byte_size(alphabet) > 1 and
               is_integer(mask) and mask > 0 do
     size
     |> random_bytes()
@@ -92,6 +99,25 @@ defmodule Nanoid.Secure do
 
   defp generator(_size, _alphabet, _mask),
     do: generator(@default_size, @default_alphabet, @default_mask)
+
+  @spec calculate_mask(Integer.t()) :: Integer.t()
+  defp calculate_mask(alphabet_length)
+
+  defp calculate_mask(alphabet_length) when is_integer(alphabet_length) and alphabet_length > 1,
+    do: (2 <<< round(Float.floor(:math.log(alphabet_length - 1) / :math.log(2)))) - 1
+
+  defp calculate_mask(_alphabet_length),
+    do: calculate_mask(2)
+
+  @spec calculate_step(Integer.t(), Integer.t(), Integer.t()) :: Integer.t()
+  defp calculate_step(mask, size, alphabet_length)
+
+  defp calculate_step(mask, size, alphabet_length)
+       when is_integer(alphabet_length) and alphabet_length > 0,
+       do: round(Float.ceil(1.6 * mask * size / alphabet_length))
+
+  defp calculate_step(mask, size, _alphabet_length),
+    do: calculate_step(mask, size, 1)
 
   @spec random_bytes(Integer.t()) :: nonempty_list(Integer.t())
   defp random_bytes(size)

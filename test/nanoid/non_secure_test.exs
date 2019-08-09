@@ -2,7 +2,7 @@ defmodule Nanoid.NonSecureTest do
   use ExUnit.Case, async: true
 
   ## --> SETTINGS
-  @moduletag timeout: 180_000
+  @moduletag timeout: :timer.minutes(5)
 
   ## --> SETUP
   setup_all do
@@ -16,8 +16,8 @@ defmodule Nanoid.NonSecureTest do
     assert byte_size(nanoid) > 0
   end
 
-  test "the correct size of an ID generated with default settings" do
-    Enum.each(1..100, fn _ ->
+  test "the correct configured (default) size of an ID generated with default settings" do
+    Enum.each(1..1000, fn _ ->
       nanoid_length =
         Nanoid.NonSecure.generate()
         |> String.length()
@@ -26,8 +26,36 @@ defmodule Nanoid.NonSecureTest do
     end)
   end
 
+  test "the correct size of an ID generated with a given custom size" do
+    custom_size = Enum.random(10..64)
+
+    Enum.each(1..1000, fn _ ->
+      nanoid_length =
+        custom_size
+        |> Nanoid.NonSecure.generate()
+        |> String.length()
+
+      assert nanoid_length == custom_size
+    end)
+  end
+
+  test "the consistency of an ID generated with a given custom size" do
+    custom_size = Enum.random(10..64)
+
+    generation_result =
+      Enum.map(1..1000, fn _ ->
+        custom_size
+        |> Nanoid.NonSecure.generate()
+        |> String.length()
+      end)
+      |> Enum.into(%MapSet{})
+
+    assert MapSet.size(generation_result) == 1
+    assert MapSet.equal?(generation_result, MapSet.new([custom_size]))
+  end
+
   test "that generated IDs are URL-friendly", context do
-    Enum.each(1..100, fn _ ->
+    Enum.each(1..1000, fn _ ->
       Nanoid.NonSecure.generate()
       |> String.graphemes()
       |> Enum.each(fn grapheme ->
@@ -39,19 +67,21 @@ defmodule Nanoid.NonSecureTest do
   test "that generated IDs have no collisions for thousands of entries at #{
          Application.get_env(:nanoid, :size, 21)
        } characters length" do
-    Enum.reduce(1..100_000, %{}, fn _, acc ->
-      nanoid = Nanoid.NonSecure.generate()
-      refute Map.has_key?(acc, nanoid)
-      Map.put(acc, nanoid, true)
-    end)
+    generation_result =
+      1..100_000
+      |> Enum.map(fn _ -> Nanoid.NonSecure.generate() end)
+      |> Enum.into(%MapSet{})
+
+    assert MapSet.size(generation_result) == 100_000
   end
 
   test "that generated IDs have no collisions for thousands of entries at 9 characters length" do
-    Enum.reduce(1..100_000, %{}, fn _, acc ->
-      nanoid = Nanoid.NonSecure.generate(9)
-      refute Map.has_key?(acc, nanoid)
-      Map.put(acc, nanoid, true)
-    end)
+    generation_result =
+      1..100_000
+      |> Enum.map(fn _ -> Nanoid.NonSecure.generate(9) end)
+      |> Enum.into(%MapSet{})
+
+    assert MapSet.size(generation_result) == 100_000
   end
 
   test "generates an ID with custom settings" do
