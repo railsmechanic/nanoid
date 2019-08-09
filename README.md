@@ -15,14 +15,14 @@ The package can be installed as Hex package:
 
   ```elixir
   def deps do
-    [{:nanoid, "~> 2.0.1"}]
+    [{:nanoid, "~> 2.0.2"}]
   end
   ```
 
   2. Run `mix deps.get` to fetch the package from hex
 
 ## Introducing a new generator
-With version 2.0.0 **[ai](https://github.com/ai/nanoid)** introduces a new `non-secure` way for creating NanoIDs.
+With version 2.0.0 of nanoid, **[@ai](https://github.com/ai/nanoid)** introduces a new `non-secure` way of creating NanoIDs.
 In order to keep this port close to the original, this possibility was also introduced in this port.
 To ensure a certain level of security, `nanoid` uses per default the `secure` token generator.
 But according to your preferences, if you don't need "cryptographically strong random tokens", just use the `non-secure` token generator.
