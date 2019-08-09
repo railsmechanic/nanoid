@@ -15,11 +15,25 @@ matrix:
           - 19.0
           - 20.0
           - 21.0
+          - 22.0
     - elixir: 1.7.4
       otp_release:
           - 19.0
           - 20.0
           - 21.0
+          - 22.0
+    - elixir: 1.8.2
+      otp_release:
+          - 20.0
+          - 21.0
+          - 22.0
+    - elixir: 1.9.1
+      otp_release:
+          - 20.0
+          - 21.0
+          - 22.0
+
+
 
 script:
   - mix test
