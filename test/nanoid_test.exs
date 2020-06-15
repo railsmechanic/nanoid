@@ -30,8 +30,7 @@ defmodule NanoidTest do
 
     test "generate/2 to generate an ID of the correct size with custom settings", context do
       Enum.each(1..100, fn _ ->
-        nanoid_length =
-          Nanoid.generate(context[:custom_length], context[:custom_alphabet]) |> String.length()
+        nanoid_length = Nanoid.generate(context[:custom_length], context[:custom_alphabet]) |> String.length()
 
         assert nanoid_length == context[:custom_length]
       end)
