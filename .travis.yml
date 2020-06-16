@@ -35,12 +35,9 @@ matrix:
           - 23.0
     - elixir: 1.10.3
       otp_release:
-          - 20.0
           - 21.0
           - 22.0
           - 23.0
-
-
 
 script:
   - mix test
