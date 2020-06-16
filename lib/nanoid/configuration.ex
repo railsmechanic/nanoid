@@ -5,8 +5,8 @@ defmodule Nanoid.Configuration do
 
   ## -- DEFAULT ATTRIBUTES
   @default_mask 63
-  @default_size Application.compile_env(:nanoid, :size, 1)
-  @default_alphabet Application.compile_env(:nanoid, :alphabet, "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+  @default_size Application.get_env(:nanoid, :size, 1)
+  @default_alphabet Application.get_env(:nanoid, :alphabet, "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
   @default_alphabet_length String.length(@default_alphabet)
 
   @doc """
