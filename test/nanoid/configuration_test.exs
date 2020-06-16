@@ -14,12 +14,6 @@ defmodule Nanoid.ConfigurationTest do
     }
   end
 
-  setup context do
-    on_exit(fn ->
-      Application.put_env(:nanoid, :size, context[:default_size])
-      Application.put_env(:nanoid, :alphabet, context[:default_alphabet])
-    end)
-  end
 
   ## --> TEST CASES
   describe "default_mask/0" do
@@ -32,37 +26,17 @@ defmodule Nanoid.ConfigurationTest do
     test "to use the fallback size when no individual size is configured", context do
       assert Configuration.default_size() == context[:default_size]
     end
-
-    test "to use the individually configured size" do
-      Application.put_env(:nanoid, :size, 10)
-      assert Configuration.default_size() == 10
-    end
   end
 
   describe "default_alphabet/0" do
     test "to use the fallback alphabet when no individual alphabet is configured", context do
       assert Configuration.default_alphabet() == context[:default_alphabet]
     end
-
-    test "to use the individually configured alphabet" do
-      custom_alphabet = "0123456789abcdef"
-
-      Application.put_env(:nanoid, :alphabet, custom_alphabet)
-      assert Configuration.default_alphabet() == custom_alphabet
-    end
   end
 
   describe "default_alphabet_length/0" do
-    test "to use the length of the fallback alphabet when no individual alphabet is configured",
-         context do
+    test "to use the length of the fallback alphabet when no individual alphabet is configured", context do
       assert Configuration.default_alphabet_length() == String.length(context[:default_alphabet])
-    end
-
-    test "to use the length of the individually configured alphabet" do
-      custom_alphabet = "0123456789abcdef"
-
-      Application.put_env(:nanoid, :alphabet, custom_alphabet)
-      assert Configuration.default_alphabet_length() == String.length(custom_alphabet)
     end
   end
 end
