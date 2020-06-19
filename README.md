@@ -15,7 +15,7 @@ The package can be installed as Hex package:
 
   ```elixir
   def deps do
-    [{:nanoid, "~> 2.0.2"}]
+    [{:nanoid, "~> 2.0.3"}]
   end
   ```
 
