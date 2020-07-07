@@ -5,8 +5,8 @@ defmodule Nanoid.Configuration do
 
   ## -- DEFAULT ATTRIBUTES
   @default_mask 63
-  @default_size Application.get_env(:nanoid, :size, 21)
-  @default_alphabet Application.get_env(:nanoid, :alphabet, "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+  @default_size 21
+  @default_alphabet "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
   @default_alphabet_length String.length(@default_alphabet)
 
   @doc """
@@ -25,7 +25,7 @@ defmodule Nanoid.Configuration do
       21
   """
   @spec default_size :: Integer.t()
-  def default_size, do: @default_size
+  def default_size, do: Application.get_env(:nanoid, :size, @default_size)
 
   @doc """
   Returns the default alphabet of a nanoid used by the generators.
@@ -34,7 +34,7 @@ defmodule Nanoid.Configuration do
       "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
   """
   @spec default_alphabet :: String.t()
-  def default_alphabet, do: @default_alphabet
+  def default_alphabet, do: Application.get_env(:nanoid, :alphabet, @default_alphabet)
 
   @doc """
   Returns the length of the default alphabet.
