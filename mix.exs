@@ -21,7 +21,7 @@ defmodule Nanoid.Mixfile do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.21.1", only: [:dev]},
+      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:earmark, "~> 1.4.0", only: [:dev]}
     ]
   end
