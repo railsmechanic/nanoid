@@ -11,7 +11,8 @@ defmodule Nanoid.Mixfile do
       package: package(),
       deps: deps(),
       name: "Nanoid",
-      source_url: "https://github.com/railsmechanic/nanoid"
+      source_url: "https://github.com/railsmechanic/nanoid",
+      docs: docs()
     ]
   end
 
@@ -21,7 +22,7 @@ defmodule Nanoid.Mixfile do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.21.1", only: [:dev]},
+      {:ex_doc, "~> 0.23", only: :dev, runtime: false},
       {:earmark, "~> 1.4.0", only: [:dev]}
     ]
   end
@@ -35,6 +36,15 @@ defmodule Nanoid.Mixfile do
       maintainers: ["Matthias Kalb"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/railsmechanic/nanoid"}
+    ]
+  end
+
+  defp docs() do
+    [
+      main: "readme",
+      extras: [
+        "README.md"
+      ]
     ]
   end
 end
