@@ -4,9 +4,7 @@ defmodule Nanoid do
 
   **Safe.** It uses cryptographically strong random APIs and guarantees a proper distribution of symbols.
 
-  **Small.** Only 179 bytes (minified and gzipped). No dependencies. It uses Size Limit to control size.
-
-  **Compact.** It uses a larger alphabet than UUID (A-Za-z0-9_~) and has a similar number of unique IDs in just 21 symbols instead of 36.
+  **Compact.** It uses a larger alphabet than UUID (A-Za-z0-9_-) and has a similar number of unique IDs in just 21 symbols instead of 36.
   """
 
   @doc """
