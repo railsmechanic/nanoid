@@ -4,14 +4,14 @@ defmodule Nanoid.Mixfile do
   def project do
     [
       app: :nanoid,
-      version: "2.0.4",
+      name: "Nanoid",
+      version: "2.0.5",
       elixir: "~> 1.4",
+      source_url: "https://github.com/railsmechanic/nanoid",
       start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
       deps: deps(),
-      name: "Nanoid",
-      source_url: "https://github.com/railsmechanic/nanoid",
       docs: docs()
     ]
   end
