@@ -15,7 +15,7 @@ defmodule Nanoid.Configuration do
       iex> Nanoid.Configuration.default_mask()
       63
   """
-  @spec default_mask :: Integer.t()
+  @spec default_mask :: non_neg_integer()
   def default_mask, do: @default_mask
 
   @doc """
@@ -24,7 +24,7 @@ defmodule Nanoid.Configuration do
       iex> Nanoid.Configuration.default_mask()
       21
   """
-  @spec default_size :: Integer.t()
+  @spec default_size :: non_neg_integer()
   def default_size, do: @default_size
 
   @doc """
@@ -42,6 +42,6 @@ defmodule Nanoid.Configuration do
       iex> Nanoid.Configuration.default_alphabet_length()
       64
   """
-  @spec default_alphabet_length :: Integer.t()
+  @spec default_alphabet_length :: non_neg_integer()
   def default_alphabet_length, do: @default_alphabet_length
 end

@@ -44,7 +44,8 @@ defmodule Nanoid.Mixfile do
       main: "readme",
       extras: [
         "README.md"
-      ]
+      ],
+      skip_undefined_reference_warnings_on: ["readme", "README.md"]
     ]
   end
 end

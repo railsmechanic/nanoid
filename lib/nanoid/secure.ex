@@ -17,7 +17,7 @@ defmodule Nanoid.Secure do
       iex> Nanoid.Secure.generate(64)
       "wk9fsUrhK9k-MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
   """
-  @spec generate(Integer.t()) :: String.t()
+  @spec generate(non_neg_integer()) :: String.t()
   def generate(size \\ Configuration.default_size())
 
   def generate(size) when is_integer(size) and size > 0 do
@@ -38,7 +38,7 @@ defmodule Nanoid.Secure do
       iex> Nanoid.Secure.generate(64, "abcdef123")
       "aabbaca3c11accca213babed2bcd1213efb3e3fa1ad23ecbf11c2ffc123f3bbe"
   """
-  @spec generate(Integer.t(), String.t()) :: String.t()
+  @spec generate(non_neg_integer(), String.t()) :: String.t()
   def generate(size, alphabet)
 
   def generate(size, alphabet) when is_integer(size) and size > 0 and is_binary(alphabet) and byte_size(alphabet) > 1 do
@@ -58,7 +58,7 @@ defmodule Nanoid.Secure do
     do: generate(Configuration.default_size(), Configuration.default_alphabet())
 
   # Generate NanoID recursively as long as the given size is reached
-  @spec do_generate(Integer.t(), String.t(), Integer.t(), Integer.t(), String.t()) :: String.t()
+  @spec do_generate(non_neg_integer(), String.t(), non_neg_integer(), non_neg_integer(), String.t()) :: String.t()
   defp do_generate(size, alphabet, mask, step, acc \\ "")
 
   defp do_generate(size, _alphabet, _mask, _step, acc) when is_binary(acc) and byte_size(acc) >= size,
