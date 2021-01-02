@@ -33,7 +33,7 @@ defmodule Nanoid.Configuration do
       iex> Nanoid.Configuration.default_alphabet()
       "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
   """
-  @spec default_alphabet :: String.t()
+  @spec default_alphabet :: binary()
   def default_alphabet, do: @default_alphabet
 
   @doc """

@@ -11,18 +11,20 @@ defmodule Nanoid do
   Generates a secure NanoID using the default alphabet.
   ## Example
   Generate a NanoID with the default size of 21 characters.
-      iex> Nanoid.generate()
-      "mJUHrGXZBZpNX50x2xkzf"
+  iex> Nanoid.generate()
+  "mJUHrGXZBZpNX50x2xkzf"
   """
+  @spec generate :: binary()
   defdelegate generate, to: Nanoid.Secure
 
   @doc """
   Generates a secure NanoID using the default alphabet.
   ## Example
   Generate a secure NanoID with a custom size of 64 characters.
-      iex> Nanoid.generate(64)
-      "wk9fsUrhK9k-MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
+  iex> Nanoid.generate(64)
+  "wk9fsUrhK9k-MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
   """
+  @spec generate(non_neg_integer()) :: binary()
   defdelegate generate(size), to: Nanoid.Secure
 
   @doc """
@@ -36,6 +38,7 @@ defmodule Nanoid do
       iex> Nanoid.generate(64, "abcdef123")
       "aabbaca3c11accca213babed2bcd1213efb3e3fa1ad23ecbf11c2ffc123f3bbe"
   """
+  @spec generate(non_neg_integer(), binary()) :: binary()
   defdelegate generate(size, alphabet), to: Nanoid.Secure
 
   @doc """
@@ -45,6 +48,7 @@ defmodule Nanoid do
       iex> Nanoid.generate_non_secure()
       "mJUHrGXZBZpNX50x2xkzf"
   """
+  @spec generate_non_secure :: binary()
   defdelegate generate_non_secure, to: Nanoid.NonSecure, as: :generate
 
   @doc """
@@ -54,6 +58,7 @@ defmodule Nanoid do
       iex> Nanoid.generate_non_secure(64)
       "wk9fsUrhK9k-MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
   """
+  @spec generate_non_secure(non_neg_integer()) :: binary()
   defdelegate generate_non_secure(size), to: Nanoid.NonSecure, as: :generate
 
   @doc """
@@ -67,5 +72,6 @@ defmodule Nanoid do
       iex> Nanoid.generate_non_secure(64, "abcdef123")
       "aabbaca3c11accca213babed2bcd1213efb3e3fa1ad23ecbf11c2ffc123f3bbe"
   """
+  @spec generate_non_secure(non_neg_integer(), binary() | any()) :: binary()
   defdelegate generate_non_secure(size, alphabet), to: Nanoid.NonSecure, as: :generate
 end
