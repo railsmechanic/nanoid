@@ -37,6 +37,12 @@ config :nanoid,
   alphabet: "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 ```
 
+After changing configuration, remember to re-compile nanoid with following command:
+
+```sh
+$ mix deps.compile nanoid --force
+```
+
 ## Usage
 
 ### Using the "secure" (default) generator
