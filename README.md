@@ -43,6 +43,8 @@ After changing configuration, remember to re-compile nanoid with following comma
 $ mix deps.compile nanoid --force
 ```
 
+> Why re-compile? Continuously reading the configuration via `Application.get_env/3` has [a significant effect](https://github.com/railsmechanic/nanoid/issues/6#issuecomment-644774144) on the speed of nanoid. [Compiling the default configuration into byte-code](https://github.com/railsmechanic/nanoid/blob/d606738d3c8bf002121ea3249f35d2c648ffa6e2/lib/nanoid/configuration.ex#L7) will eliminate the effect.
+
 ## Usage
 
 ### Using the "secure" (default) generator
