@@ -3,7 +3,7 @@ defmodule Nanoid.Secure do
   Generate a secure URL-friendly unique ID. This method uses the secure and non predictable random generator.
   By default, the ID will have 21 symbols with a collision probability similar to UUID v4.
   """
-  use Bitwise
+  import Bitwise
   alias Nanoid.Configuration
 
   @doc """

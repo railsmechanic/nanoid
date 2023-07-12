@@ -64,7 +64,7 @@ defmodule Nanoid.NonSecureTest do
     end)
   end
 
-  test "that generated IDs have no collisions for thousands of entries at #{Application.get_env(:nanoid, :size, 21)} characters length" do
+  test "that generated IDs have no collisions for thousands of entries at #{Application.compile_env(:nanoid, :size, 21)} characters length" do
     generation_result =
       1..100_000
       |> Enum.map(fn _ -> Nanoid.NonSecure.generate() end)
