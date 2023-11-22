@@ -55,7 +55,7 @@ defmodule Nanoid.NonSecure do
   defp generator(size, alphabet)
 
   defp generator(size, alphabet) when is_integer(size) and size > 0 and is_binary(alphabet),
-    do: generator(size, String.graphemes(alphabet))
+    do: _generate(size, alphabet)
 
   defp generator(size, alphabet) when is_integer(size) and size > 0 and is_list(alphabet) and length(alphabet) > 1 do
     1..size
@@ -65,4 +65,11 @@ defmodule Nanoid.NonSecure do
 
   defp generator(_size, _alphabet),
     do: generator(Configuration.default_size(), Configuration.default_alphabet())
+
+  defp _generate(size, alphabet) when size > 0 do
+    codepoint = :binary.at(alphabet, :rand.uniform(byte_size(alphabet)) - 1)
+    <<codepoint, _generate(size - 1, alphabet)::bytes>>
+  end
+
+  defp _generate(_size = 0, _alphabet), do: <<>>
 end
