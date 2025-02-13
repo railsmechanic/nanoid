@@ -1,11 +1,13 @@
 defmodule Nanoid.Mixfile do
   use Mix.Project
 
+  @version "2.1.0"
+
   def project do
     [
       app: :nanoid,
       name: "Nanoid",
-      version: "2.1.0",
+      version: @version,
       elixir: "~> 1.12",
       source_url: "https://github.com/railsmechanic/nanoid",
       start_permanent: Mix.env() == :prod,
@@ -42,6 +44,7 @@ defmodule Nanoid.Mixfile do
   defp docs() do
     [
       main: "readme",
+      source_ref: @version,
       extras: [
         "README.md"
       ],
