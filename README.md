@@ -23,6 +23,12 @@ The package can be installed as a Hex package:
 
   2. Run `mix deps.get` to fetch the package from hex.
 
+> **3.0 is currently a release candidate.** Pre-release versions are not
+> resolved by `~> 3.0` — pin explicitly while the RC is in flight:
+> ```elixir
+> {:nanoid, "~> 3.0.0-rc"}
+> ```
+
 ## Generators
 
 NanoID ships two generators:

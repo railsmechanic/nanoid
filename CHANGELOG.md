@@ -5,7 +5,10 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 3.0.0 — 2026-05-22
+## 3.0.0-rc.1 — 2026-05-22
+
+Release candidate for the upcoming 3.0.0 release. API is considered stable;
+please report any issues before the final release.
 
 ### Added
 - New keyword-based API: `Nanoid.generate_with/1` and `Nanoid.generate_non_secure_with/1` (plus the underlying `Nanoid.Secure.generate_with/1` and `Nanoid.NonSecure.generate_with/1`). Pass `:size` and/or `:alphabet` as options. The function requires at least an (empty) options list; use `generate/0` / `generate_non_secure/0` for the no-options shortcut.
