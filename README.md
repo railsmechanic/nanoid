@@ -1,4 +1,4 @@
-# Nanoid port for Elixir [![Build Status](https://travis-ci.org/railsmechanic/nanoid.svg?branch=master)](https://travis-ci.org/railsmechanic/nanoid)
+# Nanoid port for Elixir
 
 Elixir port of NanoID ([https://github.com/ai/nanoid](https://github.com/ai/nanoid)), a tiny, secure URL-friendly unique string ID generator.
 
@@ -6,30 +6,74 @@ Elixir port of NanoID ([https://github.com/ai/nanoid](https://github.com/ai/nano
 
 **Compact.** It uses a larger alphabet than UUID `(A-Za-z0-9_-)`. So ID size was reduced from 36 to 21 symbols.
 
+**Unicode-aware.** Custom alphabets containing multi-byte graphemes (e.g. `"äöü"` or emoji) are supported.
+
 
 ## Installation
 
-The package can be installed as Hex package:
+The package can be installed as a Hex package:
 
   1. Add nanoid to your list of dependencies in `mix.exs`:
 
   ```elixir
   def deps do
-    [{:nanoid, "~> 2.1.0"}]
+    [{:nanoid, "~> 3.0"}]
   end
   ```
 
-  2. Run `mix deps.get` to fetch the package from hex
+  2. Run `mix deps.get` to fetch the package from hex.
 
-## Introducing a new generator
-With version 2.0.0 of nanoid, **[@ai](https://github.com/ai/nanoid)** introduces a new `non-secure` way of creating NanoIDs.
-In order to keep this port close to the original, this possibility was also introduced in this port.
-To ensure a certain level of security, `nanoid` uses per default the `secure` token generator.
-But according to your preferences, if you don't need "cryptographically strong random tokens", just use the `non-secure` token generator.
+## Generators
 
+NanoID ships two generators:
+
+- A **secure** generator (default) backed by `:crypto.strong_rand_bytes/1`. Use this when cryptographic strength matters.
+- A **non-secure** generator backed by `:rand`. Faster, but predictable — only use it when collision resistance, not unpredictability, is what you need.
+
+## Usage
+
+The canonical API uses keyword options:
+
+### Secure generator
+
+For the all-defaults case use `Nanoid.generate/0`:
+
+```elixir
+iex> Nanoid.generate()
+"mJUHrGXZBZpNX50x2xkzf"
+```
+
+For anything else use `Nanoid.generate_with/1` with keyword options:
+
+```elixir
+iex> Nanoid.generate_with(size: 16)
+"IRFa-VaY2b-NU5xX"
+
+iex> Nanoid.generate_with(alphabet: "abcdef123")
+"d1dcd2dee333cae1bfdea"
+
+iex> Nanoid.generate_with(size: 12, alphabet: "abcdef123")
+"d1dcd2dee333"
+```
+
+### Non-secure generator
+
+```elixir
+iex> Nanoid.generate_non_secure()
+"YBctoD1RuZqv0DLfzDxl2"
+
+iex> Nanoid.generate_non_secure_with(size: 16)
+"D2WBHGWQOVds4YKu"
+
+iex> Nanoid.generate_non_secure_with(size: 12, alphabet: "abcdef123")
+"b12c2fac2bdb"
+```
 
 ## Configuration
-Starting with version 2.0.0 of nanoid for Elixir it's possible to use `config.exs` to configure nanoid defaults e.g. for different environments.
+
+The default ID size and alphabet are baked into the compiled code via
+`Application.compile_env/3`, so they can be overridden in your application's
+`config/config.exs`:
 
 ```elixir
 config :nanoid,
@@ -37,73 +81,39 @@ config :nanoid,
   alphabet: "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 ```
 
-After changing configuration, remember to re-compile nanoid with following command:
+After changing the configuration you must re-compile nanoid:
 
 ```sh
 $ mix deps.compile nanoid --force
 ```
 
-> Why re-compile? Continuously reading the configuration via `Application.get_env/3` has [a significant effect](https://github.com/railsmechanic/nanoid/issues/6#issuecomment-644774144) on the speed of nanoid. [Compiling the default configuration into byte-code](https://github.com/railsmechanic/nanoid/blob/d606738d3c8bf002121ea3249f35d2c648ffa6e2/lib/nanoid/configuration.ex#L7) will eliminate the effect.
+> Why re-compile? The defaults are read at compile time so they end up as
+> module attributes rather than runtime `Application.get_env/3` calls. This
+> avoids a measurable hot-path overhead in production.
 
-## Usage
+## Deprecated API (pre-3.0 style)
 
-### Using the "secure" (default) generator
-#### Generate secure NanoIDs of custom size by using the default alphabet
+The positional-argument functions `Nanoid.generate/1,2` and
+`Nanoid.generate_non_secure/1,2` are still available but marked as
+`@deprecated`. They forward to the new keyword API and will continue to work
+through the 3.x line.
 
-Generate a secure NanoID with the default size of 21 characters.
+> `Nanoid.generate/0` and `Nanoid.generate_non_secure/0` are **not**
+> deprecated — they remain as the quick-access shortcut for the all-defaults
+> case.
+
 ```elixir
-iex> Nanoid.generate()
-"mJUHrGXZBZpNX50x2xkzf"
-```
+# old style — still works, emits a compile-time deprecation warning
+Nanoid.generate(16)
+Nanoid.generate(16, "abcdef123")
+Nanoid.generate_non_secure(16)
 
-Generate a secure NanoID with a custom size of 64 characters.
-```elixir
-iex> Nanoid.generate(64)
-"wk9fsUrhK9k~MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
-```
-
-#### Generate secure NanoIDs of custom size by using a custom alphabet
-
-Generate a secure NanoID with the default size of 21 characters and an individual alphabet.
-```elixir
-iex> Nanoid.generate(21, "abcdef123")
-"d1dcd2dee333cae1bfdea"
-```
-
-Generate a secure NanoID with custom size of 64 characters and an individual alphabet.
-```elixir
-iex> Nanoid.generate(64, "abcdef123")
-"aabbaca3c11accca213babed2bcd1213efb3e3fa1ad23ecbf11c2ffc123f3bbe"
-```
-
-### Using the "non-secure" generator
-#### Generate non-secure NanoIDs of custom size by using the default alphabet
-
-Generate a non-secure NanoID with the default size of 21 characters.
-```elixir
-iex> Nanoid.generate_non_secure()
-"YBctoD1RuZqv0DLfzDxl2"
-```
-
-Generate a non-secure NanoID with a custom size of 64 characters.
-```elixir
-iex> Nanoid.generate_non_secure(64)
-"D2WBHGWQOVds4YKuErmOGJ-oYfp5rik5Z-qo7kN1Dw3gv_1qQs6POmhqZdabkf8s"
-```
-
-#### Generate non-secure NanoIDs of custom size and with a custom alphabet
-
-Generate a non-secure NanoID with the default size of 21 characters and an individual alphabet.
-```elixir
-iex> Nanoid.generate_non_secure(21, "abcdef123")
-"b12c2fac2bdbcdfcfb2da"
-```
-
-Generate a non-secure NanoID with custom size of 64 characters and an individual alphabet.
-```elixir
-iex> Nanoid.generate_non_secure(64, "abcdef123")
-"dfc1ed3ea22bed1c3c2df2eb21bbd33efdfae3abd3ca2abcca1efcfbf31a3b3f"
+# new style — preferred
+Nanoid.generate_with(size: 16)
+Nanoid.generate_with(size: 16, alphabet: "abcdef123")
+Nanoid.generate_non_secure_with(size: 16)
 ```
 
 ## License
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+The MIT License (MIT). Please see [License File](LICENSE) for more information.

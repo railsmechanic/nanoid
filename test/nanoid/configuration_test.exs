@@ -14,7 +14,6 @@ defmodule Nanoid.ConfigurationTest do
     }
   end
 
-
   ## --> TEST CASES
   describe "default_mask/0" do
     test "to get the default mask of 63", context do

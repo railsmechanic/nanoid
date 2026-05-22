@@ -1,68 +1,117 @@
 defmodule Nanoid.NonSecure do
   @moduledoc """
-  Generate an URL-friendly unique ID. This method use the non-secure, predictable random generator.
-  By default, the ID will have 21 symbols with a collision probability similar to UUID v4.
+  Generate a URL-friendly unique ID using the non-secure, predictable `:rand` PRNG.
+
+  By default the ID has 21 symbols, with a collision probability similar to UUID v4.
+
+  Use `generate/0` for the all-defaults shortcut, or `generate_with/1` with
+  `:size` and/or `:alphabet` for custom IDs. The positional `generate/1,2`
+  variants remain available for backward compatibility but are deprecated.
   """
   alias Nanoid.Configuration
 
   @doc """
-  Generates a non-secure NanoID using the default alphabet.
-  ## Example
-  Generate a non-secure NanoID with the default size of 21 characters.
-      iex> Nanoid.NonSecure.generate()
-      "mJUHrGXZBZpNX50x2xkzf"
+  Generates a non-secure NanoID using a keyword list of options.
 
-  Generate a non-secure NanoID with a custom size of 64 characters.
-      iex> Nanoid.NonSecure.generate(64)
-      "wk9fsUrhK9k-MxY0hLazRKpcSlic8XYDFusks7Jb8FwCVnoQaKFSPsmmLHzP7qCX"
-  """
-  @spec generate(non_neg_integer()) :: binary()
-  def generate(size \\ Configuration.default_size())
+  Always pass at least one option — for the no-options shortcut, use `generate/0`.
 
-  def generate(size) when is_integer(size) and size > 0,
-    do: generator(size, Configuration.default_alphabet())
+  ## Options
+    * `:size` - the desired ID length in symbols (defaults to `Nanoid.Configuration.default_size/0`)
+    * `:alphabet` - the alphabet to draw from, as a binary or charlist
+      (defaults to `Nanoid.Configuration.default_alphabet/0`).
+      Multi-byte graphemes (e.g. `"äöü"` or emoji) are supported.
 
-  def generate(_size),
-    do: generator(Configuration.default_size(), Configuration.default_alphabet())
+  ## Examples
+      iex> Nanoid.NonSecure.generate_with(size: 16)
+      "IRFa-VaY2b-NU5xX"
 
-  @doc """
-  Generate a non-secure NanoID using a custom size and an individual alphabet.
-  ## Example
-  Generate a non-secure NanoID with the default size of 21 characters and an individual alphabet.
-      iex> Nanoid.NonSecure.generate(21, "abcdef123")
+      iex> Nanoid.NonSecure.generate_with(alphabet: "abcdef123")
       "d1dcd2dee333cae1bfdea"
 
-  Generate a non-secure NanoID with custom size of 64 characters and an individual alphabet.
-      iex> Nanoid.NonSecure.generate(64, "abcdef123")
-      "aabbaca3c11accca213babed2bcd1213efb3e3fa1ad23ecbf11c2ffc123f3bbe"
+      iex> Nanoid.NonSecure.generate_with(size: 12, alphabet: "abcdef123")
+      "d1dcd2dee333"
+  """
+  @spec generate_with(keyword()) :: binary()
+  def generate_with(opts) when is_list(opts) do
+    size = Keyword.get(opts, :size, Configuration.default_size())
+
+    case Keyword.fetch(opts, :alphabet) do
+      {:ok, alphabet} -> generate_custom(size, alphabet)
+      :error -> generate_default(size)
+    end
+  end
+
+  @doc """
+  Generates a non-secure NanoID using the default size and alphabet.
+
+  Quick-access shortcut, equivalent to `generate_with([])`.
+
+  ## Example
+      iex> Nanoid.NonSecure.generate()
+      "mJUHrGXZBZpNX50x2xkzf"
+  """
+  @spec generate :: binary()
+  def generate, do: generate_with([])
+
+  @deprecated "Use Nanoid.NonSecure.generate_with/1 instead"
+  @doc """
+  Generates a non-secure NanoID with the given size.
+
+  Deprecated — use `generate_with(size: size)`.
+  """
+  @spec generate(non_neg_integer()) :: binary()
+  def generate(size) when is_integer(size) and size > 0,
+    do: generate_with(size: size)
+
+  def generate(_size), do: generate_with([])
+
+  @deprecated "Use Nanoid.NonSecure.generate_with/1 instead"
+  @doc """
+  Generate a non-secure NanoID using a custom size and an individual alphabet.
+
+  Deprecated — use `generate_with/1` with the `:size` and `:alphabet` options instead:
+
+      Nanoid.NonSecure.generate_with(size: 12, alphabet: "abcdef123")
   """
   @spec generate(non_neg_integer(), binary() | list()) :: binary()
   def generate(size, alphabet)
 
-  def generate(size, alphabet) when is_integer(size) and size > 0 and is_binary(alphabet),
-    do: generator(size, alphabet)
-
-  def generate(size, alphabet) when is_integer(size) and size > 0 and is_list(alphabet),
-    do: generator(size, alphabet)
+  def generate(size, alphabet) when is_integer(size) and size > 0 and (is_binary(alphabet) or is_list(alphabet)),
+    do: generate_with(size: size, alphabet: alphabet)
 
   def generate(size, _alphabet) when is_integer(size) and size > 0,
-    do: generate(size, Configuration.default_alphabet())
+    do: generate_with(size: size)
 
   def generate(_size, _alphabet),
-    do: generate(Configuration.default_size(), Configuration.default_alphabet())
+    do: generate_with([])
 
-  @spec generator(non_neg_integer(), binary() | list()) :: binary()
-  defp generator(size, alphabet)
-
-  defp generator(size, alphabet) when is_integer(size) and size > 0 and is_binary(alphabet),
-    do: generator(size, String.graphemes(alphabet))
-
-  defp generator(size, alphabet) when is_integer(size) and size > 0 and is_list(alphabet) and length(alphabet) > 1 do
-    1..size
-    |> Enum.reduce([], fn _, acc -> [Enum.random(alphabet) | acc] end)
-    |> Enum.join()
+  defp generate_default(size) when is_integer(size) and size > 0 do
+    pick_symbols(size, Configuration.default_alphabet_tuple(), Configuration.default_alphabet_length())
   end
 
-  defp generator(_size, _alphabet),
-    do: generator(Configuration.default_size(), Configuration.default_alphabet())
+  defp generate_custom(size, alphabet) when is_integer(size) and size > 0 and is_binary(alphabet) do
+    alphabet_tuple = alphabet |> String.graphemes() |> List.to_tuple()
+    generate_from_tuple(size, alphabet_tuple)
+  end
+
+  defp generate_custom(size, alphabet) when is_integer(size) and size > 0 and is_list(alphabet) do
+    generate_from_tuple(size, List.to_tuple(alphabet))
+  end
+
+  defp generate_from_tuple(size, alphabet_tuple) do
+    alphabet_length = tuple_size(alphabet_tuple)
+
+    if alphabet_length > 1 do
+      pick_symbols(size, alphabet_tuple, alphabet_length)
+    else
+      raise ArgumentError, "alphabet must contain at least two symbols"
+    end
+  end
+
+  defp pick_symbols(size, alphabet_tuple, alphabet_length) do
+    for _ <- 1..size, into: [] do
+      elem(alphabet_tuple, :rand.uniform(alphabet_length) - 1)
+    end
+    |> IO.iodata_to_binary()
+  end
 end

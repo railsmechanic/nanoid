@@ -96,4 +96,64 @@ defmodule Nanoid.NonSecureTest do
       assert String.contains?(custom_alphabet, grapheme)
     end)
   end
+
+  describe "generate_with/1" do
+    test "with an empty option list falls back to defaults", context do
+      nanoid = Nanoid.NonSecure.generate_with([])
+      assert is_binary(nanoid)
+      assert String.length(nanoid) == Application.get_env(:nanoid, :size, 21)
+
+      nanoid
+      |> String.graphemes()
+      |> Enum.each(fn grapheme ->
+        assert String.contains?(context[:default_alphabet], grapheme)
+      end)
+    end
+
+    test "with size: option" do
+      custom_size = Enum.random(10..64)
+
+      Enum.each(1..100, fn _ ->
+        assert String.length(Nanoid.NonSecure.generate_with(size: custom_size)) == custom_size
+      end)
+    end
+
+    test "with alphabet: option uses that alphabet" do
+      custom_alphabet = "1234567890abcdef"
+
+      Nanoid.NonSecure.generate_with(alphabet: custom_alphabet)
+      |> String.graphemes()
+      |> Enum.each(fn grapheme ->
+        assert String.contains?(custom_alphabet, grapheme)
+      end)
+    end
+
+    test "with size: and alphabet: options" do
+      custom_size = 12
+      custom_alphabet = "1234567890abcdef"
+
+      nanoid = Nanoid.NonSecure.generate_with(size: custom_size, alphabet: custom_alphabet)
+      assert String.length(nanoid) == custom_size
+
+      nanoid
+      |> String.graphemes()
+      |> Enum.each(fn grapheme ->
+        assert String.contains?(custom_alphabet, grapheme)
+      end)
+    end
+
+    test "accepts charlist alphabet" do
+      custom_alphabet = ~c"1234567890abcdef"
+
+      Nanoid.NonSecure.generate_with(size: 16, alphabet: custom_alphabet)
+      |> String.graphemes()
+      |> Enum.each(fn grapheme ->
+        assert String.contains?(to_string(custom_alphabet), grapheme)
+      end)
+    end
+
+    test "ignores unknown keys" do
+      assert String.length(Nanoid.NonSecure.generate_with(size: 10, foo: :bar)) == 10
+    end
+  end
 end

@@ -1,14 +1,14 @@
 defmodule Nanoid.Mixfile do
   use Mix.Project
 
-  @version "2.1.0"
+  @version "3.0.0"
 
   def project do
     [
       app: :nanoid,
       name: "Nanoid",
       version: @version,
-      elixir: "~> 1.12",
+      elixir: "~> 1.15",
       source_url: "https://github.com/railsmechanic/nanoid",
       start_permanent: Mix.env() == :prod,
       description: description(),
@@ -24,8 +24,7 @@ defmodule Nanoid.Mixfile do
 
   defp deps do
     [
-      {:ex_doc, "~> 0.30.2", only: :dev, runtime: false},
-      {:earmark, "~> 1.4.38", only: [:dev]}
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false}
     ]
   end
 
@@ -37,18 +36,23 @@ defmodule Nanoid.Mixfile do
     [
       maintainers: ["Matthias Kalb"],
       licenses: ["MIT"],
-      links: %{"GitHub" => "https://github.com/railsmechanic/nanoid"}
+      files: ~w(lib mix.exs README.md CHANGELOG.md LICENSE),
+      links: %{
+        "GitHub" => "https://github.com/railsmechanic/nanoid",
+        "Changelog" => "https://github.com/railsmechanic/nanoid/blob/master/CHANGELOG.md"
+      }
     ]
   end
 
-  defp docs() do
+  defp docs do
     [
       main: "readme",
       source_ref: @version,
       extras: [
-        "README.md"
+        "README.md",
+        "CHANGELOG.md"
       ],
-      skip_undefined_reference_warnings_on: ["readme", "README.md"]
+      skip_undefined_reference_warnings_on: ["readme", "README.md", "CHANGELOG.md"]
     ]
   end
 end
