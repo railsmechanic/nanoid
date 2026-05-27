@@ -36,23 +36,21 @@ defmodule NanoidTest do
         assert nanoid_length == context[:custom_length]
       end)
     end
-  end
 
-  describe "Secure generate_with" do
-    test "is exported by the module" do
+    test "generate_with/1 is exported by the module" do
       Code.ensure_loaded!(Nanoid)
       assert :erlang.function_exported(Nanoid, :generate_with, 1)
     end
 
-    test "with an empty option list falls back to defaults" do
+    test "generate_with/1 with an empty option list falls back to defaults" do
       assert String.length(Nanoid.generate_with([])) == Application.get_env(:nanoid, :size, 21)
     end
 
-    test "with size: option produces an ID of that size", context do
+    test "generate_with/1 with size: option produces an ID of that size", context do
       assert String.length(Nanoid.generate_with(size: context[:custom_length])) == context[:custom_length]
     end
 
-    test "with alphabet: option uses that alphabet only", context do
+    test "generate_with/1 with alphabet: option uses that alphabet only", context do
       Nanoid.generate_with(alphabet: context[:custom_alphabet])
       |> String.graphemes()
       |> Enum.each(fn grapheme ->
@@ -60,7 +58,7 @@ defmodule NanoidTest do
       end)
     end
 
-    test "with size: and alphabet: options", context do
+    test "generate_with/1 with size: and alphabet: options", context do
       nanoid = Nanoid.generate_with(size: context[:custom_length], alphabet: context[:custom_alphabet])
       assert String.length(nanoid) == context[:custom_length]
 
@@ -105,23 +103,21 @@ defmodule NanoidTest do
         assert nanoid_length == context[:custom_length]
       end)
     end
-  end
 
-  describe "Non-Secure generate_non_secure_with" do
-    test "is exported by the module" do
+    test "generate_non_secure_with/1 is exported by the module" do
       Code.ensure_loaded!(Nanoid)
       assert :erlang.function_exported(Nanoid, :generate_non_secure_with, 1)
     end
 
-    test "with an empty option list falls back to defaults" do
+    test "generate_non_secure_with/1 with an empty option list falls back to defaults" do
       assert String.length(Nanoid.generate_non_secure_with([])) == Application.get_env(:nanoid, :size, 21)
     end
 
-    test "with size: option produces an ID of that size", context do
+    test "generate_non_secure_with/1 with size: option produces an ID of that size", context do
       assert String.length(Nanoid.generate_non_secure_with(size: context[:custom_length])) == context[:custom_length]
     end
 
-    test "with alphabet: option uses that alphabet only", context do
+    test "generate_non_secure_with/1 with alphabet: option uses that alphabet only", context do
       Nanoid.generate_non_secure_with(alphabet: context[:custom_alphabet])
       |> String.graphemes()
       |> Enum.each(fn grapheme ->
@@ -129,7 +125,7 @@ defmodule NanoidTest do
       end)
     end
 
-    test "with size: and alphabet: options", context do
+    test "generate_non_secure_with/1 with size: and alphabet: options", context do
       nanoid = Nanoid.generate_non_secure_with(size: context[:custom_length], alphabet: context[:custom_alphabet])
       assert String.length(nanoid) == context[:custom_length]
 

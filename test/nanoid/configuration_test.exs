@@ -2,10 +2,10 @@ defmodule Nanoid.ConfigurationTest do
   use ExUnit.Case, async: true
   alias Nanoid.Configuration
 
-  ## --> SETTINGS
+  ## SETTINGS
   @moduletag timeout: :timer.minutes(5)
 
-  ## --> SETUP
+  ## SETUP
   setup_all do
     %{
       default_mask: 63,
@@ -14,7 +14,7 @@ defmodule Nanoid.ConfigurationTest do
     }
   end
 
-  ## --> TEST CASES
+  ## TEST CASES
   describe "default_mask/0" do
     test "to get the default mask of 63", context do
       assert Configuration.default_mask() == context[:default_mask]
