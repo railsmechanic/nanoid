@@ -64,7 +64,8 @@ defmodule Nanoid.Secure do
   def generate(size) when is_integer(size) and size > 0,
     do: generate_with(size: size)
 
-  def generate(_size), do: generate_with([])
+  def generate(_size),
+    do: generate_with([])
 
   @deprecated "Use Nanoid.Secure.generate_with/1 instead"
   @doc """
