@@ -93,7 +93,7 @@ defmodule Nanoid do
 
   Deprecated — use `generate_with(size: size, alphabet: alphabet)`.
   """
-  @spec generate(non_neg_integer(), binary()) :: binary()
+  @spec generate(non_neg_integer(), binary() | charlist()) :: binary()
   defdelegate generate(size, alphabet), to: Nanoid.Secure
 
   @doc """
@@ -123,6 +123,6 @@ defmodule Nanoid do
 
   Deprecated — use `generate_non_secure_with(size: size, alphabet: alphabet)`.
   """
-  @spec generate_non_secure(non_neg_integer(), binary() | list()) :: binary()
+  @spec generate_non_secure(non_neg_integer(), binary() | charlist()) :: binary()
   defdelegate generate_non_secure(size, alphabet), to: Nanoid.NonSecure, as: :generate
 end

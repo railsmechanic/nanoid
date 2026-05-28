@@ -8,6 +8,7 @@ defmodule Nanoid.NonSecure do
   `:size` and/or `:alphabet` for custom IDs. The positional `generate/1,2`
   variants remain available for backward compatibility but are deprecated.
   """
+  alias Nanoid.Alphabet
   alias Nanoid.Configuration
 
   @doc """
@@ -74,11 +75,13 @@ defmodule Nanoid.NonSecure do
 
       Nanoid.NonSecure.generate_with(size: 12, alphabet: "abcdef123")
   """
-  @spec generate(non_neg_integer(), binary() | list()) :: binary()
-  def generate(size, alphabet)
-
-  def generate(size, alphabet) when is_integer(size) and size > 0 and (is_binary(alphabet) or is_list(alphabet)),
-    do: generate_with(size: size, alphabet: alphabet)
+  @spec generate(non_neg_integer(), binary() | charlist()) :: binary()
+  def generate(size, alphabet) when is_integer(size) and size > 0 and (is_binary(alphabet) or is_list(alphabet)) do
+    case Alphabet.convert_alphabet(alphabet) do
+      {:ok, _tuple} -> generate_with(size: size, alphabet: alphabet)
+      :error -> generate_with(size: size)
+    end
+  end
 
   def generate(size, _alphabet) when is_integer(size) and size > 0,
     do: generate_with(size: size)
@@ -86,29 +89,32 @@ defmodule Nanoid.NonSecure do
   def generate(_size, _alphabet),
     do: generate_with([])
 
-  defp generate_default(size) when is_integer(size) and size > 0 do
-    pick_symbols(size, Configuration.default_alphabet_tuple(), Configuration.default_alphabet_length())
-  end
+  @spec generate_default(term()) :: binary()
+  defp generate_default(size) do
+    case Alphabet.validate_size(size) do
+      {:ok, size} ->
+        pick_symbols(size, Configuration.default_alphabet_tuple(), Configuration.default_alphabet_length())
 
-  defp generate_custom(size, alphabet) when is_integer(size) and size > 0 and is_binary(alphabet) do
-    alphabet_tuple = alphabet |> String.graphemes() |> List.to_tuple()
-    generate_from_tuple(size, alphabet_tuple)
-  end
-
-  defp generate_custom(size, alphabet) when is_integer(size) and size > 0 and is_list(alphabet) do
-    generate_from_tuple(size, List.to_tuple(alphabet))
-  end
-
-  defp generate_from_tuple(size, alphabet_tuple) do
-    alphabet_length = tuple_size(alphabet_tuple)
-
-    if alphabet_length > 1 do
-      pick_symbols(size, alphabet_tuple, alphabet_length)
-    else
-      raise ArgumentError, "alphabet must contain at least two symbols"
+      :error ->
+        raise ArgumentError, "size must be a positive integer, got: #{inspect(size)}"
     end
   end
 
+  @spec generate_custom(term(), binary() | charlist()) :: binary()
+  defp generate_custom(size, alphabet) do
+    with {:size, {:ok, size}} <- {:size, Alphabet.validate_size(size)},
+         {:alphabet, {:ok, alphabet_tuple}} <- {:alphabet, Alphabet.convert_alphabet(alphabet)} do
+      pick_symbols(size, alphabet_tuple, tuple_size(alphabet_tuple))
+    else
+      {:size, :error} ->
+        raise ArgumentError, "size must be a positive integer, got: #{inspect(size)}"
+
+      {:alphabet, :error} ->
+        raise ArgumentError, "alphabet must contain at least two symbols, got: #{inspect(alphabet)}"
+    end
+  end
+
+  @spec pick_symbols(pos_integer(), tuple(), pos_integer()) :: binary()
   defp pick_symbols(size, alphabet_tuple, alphabet_length) do
     for _ <- 1..size, into: [] do
       elem(alphabet_tuple, :rand.uniform(alphabet_length) - 1)

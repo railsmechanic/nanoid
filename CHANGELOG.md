@@ -5,6 +5,36 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 3.0.0-rc.2 — 2026-05-28
+
+Refinements over rc.1, focused on input validation. No changes to the public
+API surface introduced in rc.1.
+
+### Added
+- New `Nanoid.Alphabet` module that centralises input validation:
+  `convert_alphabet/1` returns `{:ok, grapheme_tuple} | :error`, `validate_size/1`
+  returns `{:ok, pos_integer} | :error`. Both are pure and never raise — the
+  caller decides how to react.
+
+### Fixed
+- Alphabet length is now checked by grapheme count instead of `byte_size/1`.
+  A single multi-byte grapheme such as `"ä"` previously slipped past the
+  `byte_size(alphabet) > 1` guard and crashed with a `FunctionClauseError`.
+  It now raises a descriptive `ArgumentError` via `generate_with/1` (or falls
+  back to the default via the deprecated `generate/2`).
+- `Nanoid.Secure` and `Nanoid.NonSecure` now report identical, descriptive
+  `ArgumentError` messages for an alphabet with fewer than two symbols
+  (previously `FunctionClauseError` in `Secure` vs `ArgumentError` in `NonSecure`).
+- An invalid `:size` (non-positive or non-integer) now raises a descriptive
+  `ArgumentError` instead of a `FunctionClauseError`.
+
+### Changed
+- `:size` and `:alphabet` validation in both generators is routed through
+  `Nanoid.Alphabet`; the secure and non-secure paths now share the same checks
+  and error messages.
+- Added `@spec`s to the private generator helpers and removed a redundant
+  `Enum.reverse/1` in the secure generator's accumulator.
+
 ## 3.0.0-rc.1 — 2026-05-22
 
 Release candidate for the upcoming 3.0.0 release. API is considered stable;

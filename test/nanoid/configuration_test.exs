@@ -38,4 +38,14 @@ defmodule Nanoid.ConfigurationTest do
       assert Configuration.default_alphabet_length() == String.length(context[:default_alphabet])
     end
   end
+
+  describe "default_alphabet_tuple/0" do
+    test "returns the default alphabet as a grapheme tuple", context do
+      tuple = Configuration.default_alphabet_tuple()
+
+      assert is_tuple(tuple)
+      assert tuple_size(tuple) == Configuration.default_alphabet_length()
+      assert Tuple.to_list(tuple) == String.graphemes(context[:default_alphabet])
+    end
+  end
 end

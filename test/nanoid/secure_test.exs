@@ -151,5 +151,31 @@ defmodule Nanoid.SecureTest do
     test "ignores unknown keys" do
       assert String.length(Nanoid.Secure.generate_with(size: 10, foo: :bar)) == 10
     end
+
+    test "with a multi-byte unicode alphabet keeps graphemes intact" do
+      alphabet = "äöü🚀🎉"
+      nanoid = Nanoid.Secure.generate_with(size: 12, alphabet: alphabet)
+
+      assert String.length(nanoid) == 12
+
+      nanoid
+      |> String.graphemes()
+      |> Enum.each(fn grapheme ->
+        assert String.contains?(alphabet, grapheme)
+      end)
+    end
+
+    test "raises ArgumentError for an alphabet with fewer than two symbols" do
+      assert_raise ArgumentError, fn -> Nanoid.Secure.generate_with(alphabet: "a") end
+      # "ä" is a single grapheme even though byte_size/1 is 2 — must still raise.
+      assert_raise ArgumentError, fn -> Nanoid.Secure.generate_with(alphabet: "ä") end
+      assert_raise ArgumentError, fn -> Nanoid.Secure.generate_with(alphabet: "") end
+    end
+
+    test "raises ArgumentError for a non-positive or non-integer size" do
+      assert_raise ArgumentError, fn -> Nanoid.Secure.generate_with(size: 0) end
+      assert_raise ArgumentError, fn -> Nanoid.Secure.generate_with(size: -5) end
+      assert_raise ArgumentError, fn -> Nanoid.Secure.generate_with(size: "10") end
+    end
   end
 end

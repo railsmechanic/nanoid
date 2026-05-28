@@ -9,6 +9,7 @@ defmodule Nanoid.Secure do
   variants remain available for backward compatibility but are deprecated.
   """
   import Bitwise
+  alias Nanoid.Alphabet
   alias Nanoid.Configuration
 
   @doc """
@@ -52,7 +53,8 @@ defmodule Nanoid.Secure do
       "mJUHrGXZBZpNX50x2xkzf"
   """
   @spec generate :: binary()
-  def generate, do: generate_with([])
+  def generate,
+    do: generate_with([])
 
   @deprecated "Use Nanoid.Secure.generate_with/1 instead"
   @doc """
@@ -75,14 +77,13 @@ defmodule Nanoid.Secure do
 
       Nanoid.Secure.generate_with(size: 12, alphabet: "abcdef123")
   """
-  @spec generate(non_neg_integer(), binary()) :: binary()
-  def generate(size, alphabet)
-
-  def generate(size, alphabet) when is_integer(size) and size > 0 and is_binary(alphabet) and byte_size(alphabet) > 1,
-    do: generate_with(size: size, alphabet: alphabet)
-
-  def generate(size, alphabet) when is_list(alphabet),
-    do: generate(size, to_string(alphabet))
+  @spec generate(non_neg_integer(), binary() | charlist()) :: binary()
+  def generate(size, alphabet) when is_integer(size) and size > 0 and (is_binary(alphabet) or is_list(alphabet)) do
+    case Alphabet.convert_alphabet(alphabet) do
+      {:ok, _tuple} -> generate_with(size: size, alphabet: alphabet)
+      :error -> generate_with(size: size)
+    end
+  end
 
   def generate(size, _alphabet) when is_integer(size) and size > 0,
     do: generate_with(size: size)
@@ -91,31 +92,43 @@ defmodule Nanoid.Secure do
     do: generate_with([])
 
   # Fast path: default alphabet — mask, length and tuple are compile-time constants.
-  defp generate_default(size) when is_integer(size) and size > 0 do
-    mask = Configuration.default_mask()
-    alphabet_length = Configuration.default_alphabet_length()
-    step = calculate_step(mask, size, alphabet_length)
-    do_generate(size, Configuration.default_alphabet_tuple(), alphabet_length, mask, step)
+  @spec generate_default(term()) :: binary()
+  defp generate_default(size) do
+    case Alphabet.validate_size(size) do
+      {:ok, size} ->
+        mask = Configuration.default_mask()
+        alphabet_tuple = Configuration.default_alphabet_tuple()
+        alphabet_length = Configuration.default_alphabet_length()
+        step = calculate_step(mask, size, alphabet_length)
+        do_generate(size, alphabet_tuple, alphabet_length, mask, step)
+
+      :error ->
+        raise ArgumentError, "size must be a positive integer, got: #{inspect(size)}"
+    end
   end
 
-  defp generate_custom(size, alphabet)
-       when is_integer(size) and size > 0 and is_binary(alphabet) and byte_size(alphabet) > 1 do
-    alphabet_tuple = alphabet |> String.graphemes() |> List.to_tuple()
-    alphabet_length = tuple_size(alphabet_tuple)
-    mask = calculate_mask(alphabet_length)
-    step = calculate_step(mask, size, alphabet_length)
-    do_generate(size, alphabet_tuple, alphabet_length, mask, step)
+  @spec generate_custom(term(), binary() | charlist()) :: binary()
+  defp generate_custom(size, alphabet) do
+    with {:size, {:ok, size}} <- {:size, Alphabet.validate_size(size)},
+         {:alphabet, {:ok, alphabet_tuple}} <- {:alphabet, Alphabet.convert_alphabet(alphabet)} do
+      alphabet_length = tuple_size(alphabet_tuple)
+      mask = calculate_mask(alphabet_length)
+      step = calculate_step(mask, size, alphabet_length)
+      do_generate(size, alphabet_tuple, alphabet_length, mask, step)
+    else
+      {:size, :error} ->
+        raise ArgumentError, "size must be a positive integer, got: #{inspect(size)}"
+
+      {:alphabet, :error} ->
+        raise ArgumentError, "alphabet must contain at least two symbols, got: #{inspect(alphabet)}"
+    end
   end
 
-  defp generate_custom(size, alphabet) when is_list(alphabet),
-    do: generate_custom(size, to_string(alphabet))
-
+  @spec do_generate(pos_integer(), tuple(), pos_integer(), non_neg_integer(), pos_integer(), [binary()], non_neg_integer()) :: binary()
   defp do_generate(size, alphabet_tuple, alphabet_length, mask, step, acc \\ [], acc_count \\ 0)
 
-  defp do_generate(size, _alphabet_tuple, _alphabet_length, _mask, _step, acc, acc_count)
-       when acc_count >= size do
+  defp do_generate(size, _alphabet_tuple, _alphabet_length, _mask, _step, acc, acc_count) when acc_count >= size do
     acc
-    |> Enum.reverse()
     |> Enum.take(size)
     |> IO.iodata_to_binary()
   end
@@ -138,9 +151,11 @@ defmodule Nanoid.Secure do
     do_generate(size, alphabet_tuple, alphabet_length, mask, step, new_acc, new_count)
   end
 
+  @spec calculate_mask(pos_integer()) :: non_neg_integer()
   defp calculate_mask(alphabet_length) when is_integer(alphabet_length) and alphabet_length > 1,
     do: (2 <<< round(Float.floor(:math.log(alphabet_length - 1) / :math.log(2)))) - 1
 
+  @spec calculate_step(non_neg_integer(), pos_integer(), pos_integer()) :: non_neg_integer()
   defp calculate_step(mask, size, alphabet_length) when is_integer(alphabet_length) and alphabet_length > 0,
     do: round(Float.ceil(1.6 * mask * size / alphabet_length))
 end
